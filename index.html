@@ -31,7 +31,7 @@
             let contents = document.getElementById("contents");
             const xhr = new XMLHttpRequest();
 
-            xhr.open("GET", "http://localhost:3000/students");
+            xhr.open("GET", "http://localhost:3001/students");
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.send();
 
@@ -51,7 +51,7 @@
             const age = document.getElementById("age").value;
             
             const xhr = new XMLHttpRequest();
-            xhr.open("POST", "http://localhost:3000/students");
+            xhr.open("POST", "http://localhost:3001/students");
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             const data = JSON.stringify({ name: name, age: parseInt(age) });
             xhr.send(data);
@@ -70,7 +70,7 @@
         // 학생 데이터를 삭제하는 함수 (DELETE)
         function deleteData(id) {
             const xhr = new XMLHttpRequest();
-            xhr.open("DELETE", `http://localhost:3000/students/${id}`);
+            xhr.open("DELETE", `http://localhost:3001/students/${id}`);
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             xhr.send();
 
@@ -89,7 +89,7 @@
             const newAge = prompt("새로운 나이를 입력하세요:");
             
             const xhr = new XMLHttpRequest();
-            xhr.open("PUT", `http://localhost:3000/students/${id}`);
+            xhr.open("PUT", `http://localhost:3001/students/${id}`);
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             const data = JSON.stringify({ name: newName, age: parseInt(newAge) });
             xhr.send(data);
