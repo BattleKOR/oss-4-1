@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student CRUD with REST API</title>
+</head>
+<body>
+    <h1>학생 데이터 관리</h1>
+    
+    <!-- 학생 데이터 가져오기 및 추가 -->
+    <button id="btnStu">학생 데이터 가져오기</button>
+    <input type="text" id="name" placeholder="name">
+    <input type="number" id="age" placeholder="age">
+    <button id="btnAdd">학생 데이터 추가</button>
+    
+    <div id="contents"></div>
+    
+    <script>
+        // 페이지가 로드될 때 이벤트 리스너를 추가
+        window.onload = function () {
+            let btnStu = document.getElementById("btnStu");
+            let btnAdd = document.getElementById("btnAdd");
+            
+            btnStu.addEventListener("click", getStudents);
+            btnAdd.addEventListener("click", postData);
+        }
+
+        // 학생 목록을 가져오는 함수 (GET)
+        function getStudents() {
+            let contents = document.getElementById("contents");
+            const xhr = new XMLHttpRequest();
+
+            xhr.open("GET", "http://localhost:3000/students");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send();
+
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    const res = JSON.parse(xhr.response);
+                    contents.innerHTML = makeList(res);
+                } else {
+                    console.log(xhr.status, xhr.statusText);
+                }
+            }
+        }
+
+        // 새로운 학생 데이터를 추가하는 함수 (POST)
+        function postData() {
+            const name = document.getElementById("name").value;
+            const age = document.getElementById("age").value;
+            
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://localhost:3000/students");
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            const data = JSON.stringify({ name: name, age: parseInt(age) });
+            xhr.send(data);
+
+            xhr.onload = () => {
+                if (xhr.status === 201) {
+                    document.getElementById("name").value = "";
+                    document.getElementById("age").value = "";
+                    getStudents(); // 새로 추가한 데이터를 포함하여 목록 갱신
+                } else {
+                    console.log(xhr.status, xhr.statusText);
+                }
+            }
+        }
+
+        // 학생 데이터를 삭제하는 함수 (DELETE)
+        function deleteData(id) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("DELETE", `http://localhost:3000/students/${id}`);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.send();
+
+            xhr.onload = () => {
+                if (xhr.status === 200 || xhr.status === 204) {  // 204 상태 코드를 성공 상태로 추가
+                    getStudents(); // 삭제 후 목록 갱신
+                } else {
+                    console.log(xhr.status, xhr.statusText);
+                }
+            }
+        }
+
+        // 학생 데이터를 수정하는 함수 (PUT)
+        function updateData(id) {
+            const newName = prompt("새로운 이름을 입력하세요:");
+            const newAge = prompt("새로운 나이를 입력하세요:");
+            
+            const xhr = new XMLHttpRequest();
+            xhr.open("PUT", `http://localhost:3000/students/${id}`);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            const data = JSON.stringify({ name: newName, age: parseInt(newAge) });
+            xhr.send(data);
+
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    getStudents(); // 수정 후 목록 갱신
+                } else {
+                    console.log(xhr.status, xhr.statusText);
+                }
+            }
+        }
+
+        // HTML 목록 생성 함수
+        function makeList(data) {
+            let str = "<ul>";
+            data.forEach((student) => {
+                str += `
+                    <li>
+                        이름: ${student.name}, 나이: ${student.age}
+                        <button onclick="updateData(${student.id})">수정</button>
+                        <button onclick="deleteData(${student.id})">삭제</button>
+                    </li>
+                `;
+            });
+            str += "</ul>";
+            return str;
+        }
+    </script>
+</body>
+</html>
